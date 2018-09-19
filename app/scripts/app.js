@@ -27,10 +27,13 @@ proper order even if all the requests haven't finished.
    */
   function createPlanetThumb(data) {
     var pT = document.createElement('planet-thumb');
+    console.log(pT);
     for (var d in data) {
       pT[d] = data[d];
     }
+    console.log(pT);
     home.appendChild(pT);
+    console.log('rendered')
   }
 
   /**
@@ -49,6 +52,7 @@ proper order even if all the requests haven't finished.
    */
   function getJSON(url) {
     return get(url).then(function(response) {
+      console.log('sent :' + url);
       return response.json();
     });
   }
@@ -58,17 +62,17 @@ proper order even if all the requests haven't finished.
     /*
     Your code goes here!
      */
-     var x=[];
-     var seq =  Promise.resolve();
+   var arrayOfPromises=[];
+   var sequence =  Promise.resolve();
     getJSON('../data/earth-like-results.json')
-    .then(data=>{
-      x=data.results.map(url=>{
+    .then(response=>{
+      arrayOfPromises=response.results.map(url=>{
         return getJSON(url);
       });
     })
     .then(_=>{
-      x.forEach(prom=>{
-        seq = seq.then(_=>prom).then(createPlanetThumb);
+      arrayOfPromises.forEach(request=>{
+        sequence = sequence.then(_=>request).then(createPlanetThumb);
       });
     })
   });
